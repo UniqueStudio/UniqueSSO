@@ -16,7 +16,7 @@ import (
 	"github.com/UniqueStudio/UniqueSSO/model"
 	"github.com/UniqueStudio/UniqueSSO/router"
 	"github.com/UniqueStudio/UniqueSSO/util"
-	"github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
@@ -148,7 +148,6 @@ func run() {
 		)
 	} else {
 		s = grpc.NewServer(
-			grpc.WithInsecure(),
 			grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
 				grpc_recovery.StreamServerInterceptor(),
 				otelgrpc.StreamServerInterceptor(),

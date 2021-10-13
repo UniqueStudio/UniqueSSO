@@ -1,0 +1,95 @@
+kind: pipeline
+type: docker
+name: SSO
+
+clone:
+  disable: true
+
+steps:
+  - name: clone
+    image: alpine/git
+    commands:
+      - git clone -b $DRONE_COMMIT_BRANCH https://github.com.cnpmjs.org/UniqueStudio/UniqueSSO.git .
+#  - name: clone
+#    image: alpine/git
+#    commands:
+#      - git init
+#      - git remote add origin  https://github.com.cnpmjs.org/UniqueStudio/UniqueSSO.git
+#      - git config core.sparsecheckout true
+#      - echo "SSO" >> .git/info/sparse-checkout
+#      - git pull origin $DRONE_COMMIT_BRANCH
+
+  - name: build_publish
+    image: plugins/docker
+    depends_on:
+      - clone
+    settings:
+      username:
+        from_secret: docker_hub_username
+      password:
+        from_secret: docker_hub_password
+      tags: latest
+      dockerfile: ./SSO/Dockerfile
+      registry: ccr.ccs.tencentyun.com
+      repo: ccr.ccs.tencentyun.com/unique-studio/sso
+
+    volumes:
+      - name: config_dev
+        path: /drone/src/SSO/settings.yaml
+      - name: sock
+        path: /var/run/docker.sock
+      - name: local
+        path: /var/lib/docker
+
+  - name: deploy_dev
+    image: tmaier/docker-compose
+    depends_on:
+      - build_publish
+    volumes:
+      - name: sock
+        path: /var/run/docker.sock
+      - name: config_dev
+        path: /drone/src/SSO/conf.yaml
+    commands:
+      - docker-compose up -f docker-compose.yaml -p ./SSO  -d  --remove-orphans  uniquesso-back
+    when:
+      branch:
+        - dev
+      event:
+        - push
+  - name: deploy_prod
+    image: tmaier/docker-compose
+    depends_on:
+      - build_publish
+    volumes:
+      - name: sock
+        path: /var/run/docker.sock
+      - name: config-prod
+        path: /drone/src/SSO/conf.yaml
+    commands:
+      - docker-compose up -f docker-compose.yaml -p ./SSO  -d  --remove-orphans  uniquesso-back
+    when:
+      event:
+        - tag
+
+volumes:
+  - name: sock
+    host:
+      path: /var/run/docker.sock
+  - name: local
+    host:
+      path: /var/lib/docker
+  - name: config_dev
+    #把宿主机的config挂载进docker
+    host:
+      path: /root/service-dev/SSO/conf.yaml
+  - name: config-prod
+    host:
+      path: /root/service/SSO/conf.yaml
+
+trigger:
+  branch:
+    - dev
+  event:
+    - push
+    - tag

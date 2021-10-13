@@ -17,7 +17,7 @@ WORKDIR /opt/${PROJECT_NAME}
 
 COPY --from=0 /app/main ./${PROJECT_NAME}
 RUN mkdir config && \
-    echo "./${PROJECT_NAME} server -c=settings.yaml" >>start.sh && \
+    echo "./${PROJECT_NAME} -c=settings.yaml" >>start.sh && \
     chmod 755 -R /opt/$PROJECT_NAME
 
 CMD ./start.sh

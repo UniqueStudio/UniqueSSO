@@ -1,30 +1,49 @@
 version: "3.7"
 
+x-logging: &loki-logging
+    driver: loki
+    options:
+        loki-url: http://localhost:3100/loki/api/v1/push
+        loki-external-labels: job=dockerlogs,maintainer=xylonx,environment=development
+        loki-pipeline-stages: |
+            - json:
+                expressions:
+                    traceId: TraceID
+                    spanId: SpanID
+                    level: level
+            - labels:
+                traceId:
+                spanId:
+                level:
+
 services:
     uniquesso-back:
         build: ./SSO
+        container_name: dev-sso-back
         volumes:
-            - ./SSO/conf.yaml:/opt/uniquesso-backend/config/settings.yaml
+            - ./conf.yaml:/opt/uniquesso-backend/settings.yaml
         ports:
-            - 5000:5000
+            - 6004:5000
         networks:
             - uniquesso
             - db_network
-
+        logging: *loki-logging
+        
     uniquesso-front:
-        build: ./dashboard
-        env_file:
-            - ./dashboard/.env
-        volumes:
-            - ./static/:/opt/uniquesso-dashboard/
-        networks:
-            - uniquesso
-            - db_network
+         build: ./dashboard
+         env_file:
+             - ./dashboard/.env
+         volumes:
+             - ./static/:/opt/uniquesso-dashboard/
+         networks:
+             - uniquesso
+             - db_network
+
 
 networks:
     uniquesso:
         internal: true
-        name: uniquesso
+        name: uniques
     db_network:
         external: true
-        name: db_network
+        name: database
