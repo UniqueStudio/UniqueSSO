@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: SSO
+name: SSO-CI
 
 clone:
   disable: true
@@ -9,15 +9,7 @@ steps:
   - name: clone
     image: alpine/git
     commands:
-      - git clone -b $DRONE_COMMIT_BRANCH https://github.com.cnpmjs.org/UniqueStudio/UniqueSSO.git .
-#  - name: clone
-#    image: alpine/git
-#    commands:
-#      - git init
-#      - git remote add origin  https://github.com.cnpmjs.org/UniqueStudio/UniqueSSO.git
-#      - git config core.sparsecheckout true
-#      - echo "SSO" >> .git/info/sparse-checkout
-#      - git pull origin $DRONE_COMMIT_BRANCH
+      - git clone --depth=1 -b $DRONE_COMMIT_BRANCH https://github.com.cnpmjs.org/UniqueStudio/UniqueSSO.git .
 
   - name: build_publish
     image: plugins/docker
@@ -28,46 +20,44 @@ steps:
         from_secret: docker_hub_username
       password:
         from_secret: docker_hub_password
-      tags: latest
+      tags: ${DRONE_TAG=latest}
+      context: ./SSO
       dockerfile: ./SSO/Dockerfile
+      build_args:
+        - GOMODCACHEDIR=/drone/src/go
       registry: ccr.ccs.tencentyun.com
       repo: ccr.ccs.tencentyun.com/unique-studio/sso
-
     volumes:
-      - name: config_dev
-        path: /drone/src/SSO/settings.yaml
       - name: sock
         path: /var/run/docker.sock
       - name: local
         path: /var/lib/docker
+      - name: go-pkg
+        path: /drone/src/go
 
   - name: deploy_dev
-    image: tmaier/docker-compose
+    image: docker/compose:1.29.2
+    commands:
+      - docker-compose up -d --remove-orphans uniquesso-back
     depends_on:
       - build_publish
     volumes:
       - name: sock
         path: /var/run/docker.sock
-      - name: config_dev
-        path: /drone/src/SSO/conf.yaml
-    commands:
-      - docker-compose up -f docker-compose.yaml -p ./SSO  -d  --remove-orphans  uniquesso-back
     when:
       branch:
         - dev
       event:
         - push
   - name: deploy_prod
-    image: tmaier/docker-compose
+    image: docker/compose:1.29.2
+    commands:
+      - docker-compose up -d --remove-orphans uniquesso-back
     depends_on:
       - build_publish
     volumes:
       - name: sock
         path: /var/run/docker.sock
-      - name: config-prod
-        path: /drone/src/SSO/conf.yaml
-    commands:
-      - docker-compose up -f docker-compose.yaml -p ./SSO  -d  --remove-orphans  uniquesso-back
     when:
       event:
         - tag
@@ -79,13 +69,9 @@ volumes:
   - name: local
     host:
       path: /var/lib/docker
-  - name: config_dev
-    #把宿主机的config挂载进docker
+  - name: go-pkg
     host:
-      path: /root/service-dev/SSO/conf.yaml
-  - name: config-prod
-    host:
-      path: /root/service/SSO/conf.yaml
+      path: /root/go
 
 trigger:
   branch:

@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3.9"
 
 x-logging: &loki-logging
     driver: loki
@@ -18,27 +18,17 @@ x-logging: &loki-logging
 
 services:
     uniquesso-back:
-        build: ./SSO
+        image: ccr.ccs.tencentyun.com/unique-studio/sso:${DRONE_TAG:-latest}
         container_name: dev-sso-back
+        restart: on-failure:5
         volumes:
-            - ./conf.yaml:/opt/uniquesso-backend/settings.yaml
+            - /root/service-dev/SSO/conf.yaml:/opt/uniquesso-backend/settings.yaml
         ports:
             - 6004:5000
         networks:
             - uniquesso
             - db_network
         logging: *loki-logging
-        
-    uniquesso-front:
-         build: ./dashboard
-         env_file:
-             - ./dashboard/.env
-         volumes:
-             - ./static/:/opt/uniquesso-dashboard/
-         networks:
-             - uniquesso
-             - db_network
-
 
 networks:
     uniquesso:
