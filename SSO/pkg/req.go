@@ -68,3 +68,8 @@ type LarkGetContactUserInfoResp struct {
 		User lark.LarkUserInfo `json:"user"`
 	} `json:"data"`
 }
+
+type LarkDeleteContactUserInfoResp struct {
+	Code    int    `json:"code"`
+	Message string `json:"msg"`
+}

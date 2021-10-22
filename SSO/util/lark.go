@@ -22,12 +22,6 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
-const (
-	LarkWebFmt    = "https://open.larksuite.com/open-apis/auth/v3/app_access_token/internal"                  //获取app_token的网址
-	LarkStateFmt  = "https://open.larksuite.com/open-apis/authen/v1/index?redirect_uri=%s&app_id=%s&state=%s" //获取auth_code的网址
-	LarkUserIdFmt = "https://open.larksuite.com/open-apis/authen/v1/access_token"                             //获取用户信息的网址
-)
-
 func LarkAuthCode2IDToken(ctx context.Context, authCode string) (string, string, error) {
 	apmCtx, span := Tracer.Start(ctx, "GetLarkUserToken")
 	defer span.End()

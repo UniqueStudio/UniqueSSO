@@ -12,6 +12,8 @@ import (
 	"github.com/UniqueStudio/UniqueSSO/common"
 	"github.com/UniqueStudio/UniqueSSO/conf"
 	"github.com/UniqueStudio/UniqueSSO/database"
+	"github.com/UniqueStudio/UniqueSSO/internal"
+	"github.com/UniqueStudio/UniqueSSO/internal/kicker"
 	"github.com/UniqueStudio/UniqueSSO/middleware"
 	"github.com/UniqueStudio/UniqueSSO/model"
 	"github.com/UniqueStudio/UniqueSSO/router"
@@ -78,6 +80,13 @@ func setup() {
 	if err := middleware.SetupMiddleware(); err != nil {
 		os.Exit(1)
 	}
+
+	// init user kicker
+	if err := internal.SetupUserMaintainer(); err != nil {
+		os.Exit(1)
+	}
+	internal.Maintainer.RegisterKicker(kicker.NewQQKicker())
+	internal.Maintainer.RegisterKicker(kicker.NewLarkKicker())
 }
 
 func run() {

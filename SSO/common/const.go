@@ -57,14 +57,14 @@ func REDIS_LARK_USER_TOKEN_KEY(unionId string) string {
 }
 
 const (
-	LARK_OAUTH = "https://open.larksuite.com/open-apis/authen/v1/index?redirect_uri=%s&app_id=%s&state=%s"
+	LARK_OAUTH = "https://open.feishu.cn/open-apis/authen/v1/index?redirect_uri=%s&app_id=%s&state=%s"
 
-	LARK_AUTH_CODE2TOKEN    = "https://open.larksuite.com/open-apis/authen/v1/access_token"
-	LARK_USER_TOKEN_REFRESH = "https://open.larksuite.com/open-apis/authen/v1/refresh_access_token"
-	LARK_TENANT_TOKEN       = "https://open.larksuite.com/open-apis/auth/v3/tenant_access_token/internal"
-	LARK_APP_TOKEN          = "https://open.larksuite.com/open-apis/auth/v3/app_access_token/internal"
+	LARK_AUTH_CODE2TOKEN    = "https://open.feishu.cn/open-apis/authen/v1/access_token"
+	LARK_USER_TOKEN_REFRESH = "https://open.feishu.cn/open-apis/authen/v1/refresh_access_token"
+	LARK_TENANT_TOKEN       = "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal"
+	LARK_APP_TOKEN          = "https://open.feishu.cn/open-apis/auth/v3/app_access_token/internal"
 
-	LARK_FETCH_USER_INFO = "https://open.larksuite.com/open-apis/authen/v1/user_info"
+	LARK_FETCH_USER_INFO = "https://open.feishu.cn/open-apis/authen/v1/user_info"
 )
 
 func LARK_OAUTH_URL(state string) string {
@@ -76,7 +76,11 @@ func LARK_OAUTH_URL(state string) string {
 }
 
 func LARK_FETCH_USER_CONTACT_INFO(id string) string {
-	return "https://open.larksuite.com/open-apis/contact/v3/users/" + id
+	return "https://open.feishu.cn/open-apis/contact/v3/users/" + id
+}
+
+func LARK_DELETE_USER(id string) string {
+	return "https://open.feishu.cn/open-apis/contact/v3/users/" + id
 }
 
 var (
