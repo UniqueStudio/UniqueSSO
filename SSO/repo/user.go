@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"github.com/UniqueStudio/UniqueSSO/common"
 	"github.com/UniqueStudio/UniqueSSO/database"
 	"github.com/UniqueStudio/UniqueSSO/model"
 	"github.com/UniqueStudio/UniqueSSO/pb/sso"
@@ -197,7 +196,7 @@ func SaveUser(ctx context.Context, user *sso.User) error {
 	for i := range user.ExternalInfos {
 		eids[i] = user.ExternalInfos[i].EID
 		switch user.ExternalInfos[i].EName {
-		case common.EXTERNAL_NAME_LARK:
+		case sso.ExternalType_Lark:
 			larkExtInfo, err := util.UnmarshalLarkExternalInfo(user.ExternalInfos[i].Detail)
 			if err != nil {
 				span.RecordError(err)

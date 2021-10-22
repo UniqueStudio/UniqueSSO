@@ -20,6 +20,10 @@ const _ = grpc.SupportPackageIsVersion7
 type SSOServiceClient interface {
 	HaveAccess(ctx context.Context, in *QueryAccessRequest, opts ...grpc.CallOption) (*QueryAccessResponse, error)
 	GetUserBasicInfo(ctx context.Context, in *QueryUserInfoRequest, opts ...grpc.CallOption) (*User, error)
+	AddExternalInfo(ctx context.Context, in *ExternalInfo, opts ...grpc.CallOption) (*StandardResponse, error)
+	KickUser(ctx context.Context, in *KickUserRequest, opts ...grpc.CallOption) (*StandardResponse, error)
+	UpdateUserBasicInfo(ctx context.Context, in *User, opts ...grpc.CallOption) (*StandardResponse, error)
+	UpdateUserExternalInfo(ctx context.Context, in *ExternalInfo, opts ...grpc.CallOption) (*StandardResponse, error)
 }
 
 type sSOServiceClient struct {
@@ -48,12 +52,52 @@ func (c *sSOServiceClient) GetUserBasicInfo(ctx context.Context, in *QueryUserIn
 	return out, nil
 }
 
+func (c *sSOServiceClient) AddExternalInfo(ctx context.Context, in *ExternalInfo, opts ...grpc.CallOption) (*StandardResponse, error) {
+	out := new(StandardResponse)
+	err := c.cc.Invoke(ctx, "/sso.SSOService/AddExternalInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *sSOServiceClient) KickUser(ctx context.Context, in *KickUserRequest, opts ...grpc.CallOption) (*StandardResponse, error) {
+	out := new(StandardResponse)
+	err := c.cc.Invoke(ctx, "/sso.SSOService/KickUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *sSOServiceClient) UpdateUserBasicInfo(ctx context.Context, in *User, opts ...grpc.CallOption) (*StandardResponse, error) {
+	out := new(StandardResponse)
+	err := c.cc.Invoke(ctx, "/sso.SSOService/UpdateUserBasicInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *sSOServiceClient) UpdateUserExternalInfo(ctx context.Context, in *ExternalInfo, opts ...grpc.CallOption) (*StandardResponse, error) {
+	out := new(StandardResponse)
+	err := c.cc.Invoke(ctx, "/sso.SSOService/UpdateUserExternalInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SSOServiceServer is the server API for SSOService service.
 // All implementations must embed UnimplementedSSOServiceServer
 // for forward compatibility
 type SSOServiceServer interface {
 	HaveAccess(context.Context, *QueryAccessRequest) (*QueryAccessResponse, error)
 	GetUserBasicInfo(context.Context, *QueryUserInfoRequest) (*User, error)
+	AddExternalInfo(context.Context, *ExternalInfo) (*StandardResponse, error)
+	KickUser(context.Context, *KickUserRequest) (*StandardResponse, error)
+	UpdateUserBasicInfo(context.Context, *User) (*StandardResponse, error)
+	UpdateUserExternalInfo(context.Context, *ExternalInfo) (*StandardResponse, error)
 	mustEmbedUnimplementedSSOServiceServer()
 }
 
@@ -66,6 +110,18 @@ func (UnimplementedSSOServiceServer) HaveAccess(context.Context, *QueryAccessReq
 }
 func (UnimplementedSSOServiceServer) GetUserBasicInfo(context.Context, *QueryUserInfoRequest) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserBasicInfo not implemented")
+}
+func (UnimplementedSSOServiceServer) AddExternalInfo(context.Context, *ExternalInfo) (*StandardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddExternalInfo not implemented")
+}
+func (UnimplementedSSOServiceServer) KickUser(context.Context, *KickUserRequest) (*StandardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method KickUser not implemented")
+}
+func (UnimplementedSSOServiceServer) UpdateUserBasicInfo(context.Context, *User) (*StandardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserBasicInfo not implemented")
+}
+func (UnimplementedSSOServiceServer) UpdateUserExternalInfo(context.Context, *ExternalInfo) (*StandardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserExternalInfo not implemented")
 }
 func (UnimplementedSSOServiceServer) mustEmbedUnimplementedSSOServiceServer() {}
 
@@ -116,6 +172,78 @@ func _SSOService_GetUserBasicInfo_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SSOService_AddExternalInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExternalInfo)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SSOServiceServer).AddExternalInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.SSOService/AddExternalInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SSOServiceServer).AddExternalInfo(ctx, req.(*ExternalInfo))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SSOService_KickUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(KickUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SSOServiceServer).KickUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.SSOService/KickUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SSOServiceServer).KickUser(ctx, req.(*KickUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SSOService_UpdateUserBasicInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(User)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SSOServiceServer).UpdateUserBasicInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.SSOService/UpdateUserBasicInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SSOServiceServer).UpdateUserBasicInfo(ctx, req.(*User))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SSOService_UpdateUserExternalInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExternalInfo)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SSOServiceServer).UpdateUserExternalInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.SSOService/UpdateUserExternalInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SSOServiceServer).UpdateUserExternalInfo(ctx, req.(*ExternalInfo))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SSOService_ServiceDesc is the grpc.ServiceDesc for SSOService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -130,6 +258,22 @@ var SSOService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserBasicInfo",
 			Handler:    _SSOService_GetUserBasicInfo_Handler,
+		},
+		{
+			MethodName: "AddExternalInfo",
+			Handler:    _SSOService_AddExternalInfo_Handler,
+		},
+		{
+			MethodName: "KickUser",
+			Handler:    _SSOService_KickUser_Handler,
+		},
+		{
+			MethodName: "UpdateUserBasicInfo",
+			Handler:    _SSOService_UpdateUserBasicInfo_Handler,
+		},
+		{
+			MethodName: "UpdateUserExternalInfo",
+			Handler:    _SSOService_UpdateUserExternalInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -72,12 +72,14 @@ func LarkOauthCallbackHandler(ctx *gin.Context) {
 		user := &sso.User{
 			Name:        larkUserInfo.Name,
 			Phone:       strings.Replace(larkUserInfo.Mobile, "+86", "", 1),
+			Gender:      util.LarkGender2UserGender(larkUserInfo.Gender),
 			Email:       larkUserInfo.Email,
 			Group:       userGroups,
 			UserType:    userType,
+			AvatarURL:   larkUserInfo.Avatar.AvatarOrigin,
 			Permissions: common.USER_TYPE_PERMISSION[userType],
 			ExternalInfos: []*sso.ExternalInfo{
-				{EName: common.EXTERNAL_NAME_LARK, EID: larkUserInfo.UnionID, Detail: larkDetail},
+				{EName: sso.ExternalType_Lark, EID: larkUserInfo.UnionID, Detail: larkDetail},
 			},
 		}
 		err = repo.SaveUser(apmCtx, user)
@@ -93,10 +95,12 @@ func LarkOauthCallbackHandler(ctx *gin.Context) {
 		Phone:       strings.Replace(larkUserInfo.Mobile, "+86", "", 1),
 		Email:       larkUserInfo.Email,
 		Group:       userGroups,
+		Gender:      util.LarkGender2UserGender(larkUserInfo.Gender),
 		UserType:    userType,
+		AvatarURL:   larkUserInfo.Avatar.AvatarOrigin,
 		Permissions: common.USER_TYPE_PERMISSION[userType],
 		ExternalInfos: []*sso.ExternalInfo{
-			{EName: common.EXTERNAL_NAME_LARK, EID: larkUserInfo.UnionID, Detail: larkDetail},
+			{EName: sso.ExternalType_Lark, EID: larkUserInfo.UnionID, Detail: larkDetail},
 		},
 	})
 

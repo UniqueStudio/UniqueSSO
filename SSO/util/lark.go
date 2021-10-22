@@ -281,6 +281,50 @@ func GetLarkContactUserInfo(ctx context.Context, userId string) (*lark.LarkUserI
 	return &data.Data.User, nil
 }
 
+func RemoveLarkUser(ctx context.Context, eid string) error {
+	apmCtx, span := Tracer.Start(ctx, "RemoveLarkUser")
+	defer span.End()
+
+	req, err := http.NewRequestWithContext(
+		apmCtx,
+		http.MethodDelete,
+		common.LARK_DELETE_USER(eid),
+		nil,
+	)
+	if err != nil {
+		span.RecordError(err)
+		zapx.WithContext(apmCtx).Error("build delete lark user info request failed", zap.Error(err))
+		return err
+	}
+
+	tt, err := GetLarkTenantToken(apmCtx)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Authorization", "Bearer "+tt)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		span.RecordError(err)
+		zapx.WithContext(apmCtx).Error("send delete user contact info failed", zap.Error(err))
+		return err
+	}
+
+	data := new(pkg.LarkDeleteContactUserInfoResp)
+	if err := json.NewDecoder(resp.Body).Decode(data); err != nil {
+		span.RecordError(err)
+		zapx.WithContext(apmCtx).Error("unmarshal response failed", zap.Error(err))
+		return err
+	}
+
+	if data.Code != 0 {
+		return errors.New(data.Message)
+	}
+
+	return nil
+}
+
 func MarshelLarkExternalInfo(extInfo *lark.LarkUserInfo) (*anypb.Any, error) {
 	data := new(anypb.Any)
 	if err := anypb.MarshalFrom(data, extInfo, proto.MarshalOptions{}); err != nil {
@@ -297,7 +341,7 @@ func UnmarshalLarkExternalInfo(buf *anypb.Any) (*model.LarkExternalInfo, error) 
 
 	return &model.LarkExternalInfo{
 		ExternalInfo: sso.ExternalInfo{
-			EName: common.EXTERNAL_NAME_LARK,
+			EName: sso.ExternalType_Lark,
 			EID:   larkExtInfo.UnionID,
 		},
 		LarkUserInfo: *larkExtInfo,
@@ -318,4 +362,15 @@ func LarkEmployeeType2UserType(typ int32) sso.UserType {
 		return userType
 	}
 	return sso.UserType_Intern
+}
+
+func LarkGender2UserGender(gender lark.Gender) sso.Gender {
+	switch gender {
+	case lark.Gender_Male:
+		return sso.Gender_Male
+	case lark.Gender_Female:
+		return sso.Gender_Female
+	default:
+		return sso.Gender_invalidGender
+	}
 }
