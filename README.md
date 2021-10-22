@@ -1,6 +1,6 @@
 # UniqueSSO
 
-> Single Sign On for UniqueStudio
+[![Build Status](https://drone.hustunique.com/api/badges/UniqueStudio/UniqueSSO/status.svg?ref=refs/heads/dev)](https://drone.hustunique.com/UniqueStudio/UniqueSSO)
 
 ## Diagram 
 
