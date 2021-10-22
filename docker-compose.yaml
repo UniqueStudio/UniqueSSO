@@ -20,7 +20,7 @@ services:
     uniquesso-back:
         image: ccr.ccs.tencentyun.com/unique-studio/sso:${DRONE_TAG:-latest}
         container_name: dev-sso-back
-        restart: on-failure:5
+        restart: always
         volumes:
             - /root/service-dev/SSO/conf.yaml:/opt/uniquesso-backend/settings.yaml
         ports:
@@ -28,7 +28,11 @@ services:
         networks:
             - uniquesso
             - db_network
+            - apm
         logging: *loki-logging
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.grafana.rule=Host(`dev.sso.hustunique.com`)"
 
 networks:
     uniquesso:
@@ -37,3 +41,6 @@ networks:
     db_network:
         external: true
         name: database
+    apm: 
+        external: true
+        name: apm
