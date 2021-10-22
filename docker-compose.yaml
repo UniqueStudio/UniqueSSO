@@ -23,8 +23,8 @@ services:
         restart: always
         volumes:
             - /root/service-dev/SSO/conf.yaml:/opt/uniquesso-backend/settings.yaml
-        ports:
-            - 6004:5000
+        # ports:
+        #     - 6004:5000
         networks:
             - uniquesso
             - db_network
