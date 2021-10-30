@@ -3,6 +3,7 @@ package controller
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/UniqueStudio/UniqueSSO/common"
 	"github.com/UniqueStudio/UniqueSSO/pb/sso"
@@ -85,16 +86,17 @@ func GetRoleAllPermissions(ctx *gin.Context) {
 	apmCtx, span := util.Tracer.Start(ctx.Request.Context(), "AddRolePermissions")
 	defer span.End()
 
-	data := pkg.RolePermissionReq{}
-	if err := ctx.ShouldBindJSON(&data); err != nil {
-		zapx.WithContext(apmCtx).Error("bind request body failed", zap.Error(err))
+	rolestr := ctx.Query("role")
+	role, err := strconv.ParseInt(rolestr, 10, 32)
+	if err != nil {
+		zapx.WithContext(apmCtx).Error("can't parse role query to int")
 		ctx.JSON(http.StatusBadRequest, pkg.ErrorResp(err))
 		return
 	}
 
-	rps, err := repo.GetRoleAllPermissions(apmCtx, data.Role)
+	rps, err := repo.GetRoleAllPermissions(apmCtx, sso.Role(role))
 	if err != nil || rps == nil {
-		zapx.WithContext(apmCtx).Error("get role all permission failed", zap.Error(err), zap.Any("data", data))
+		zapx.WithContext(apmCtx).Error("get role all permission failed", zap.Error(err), zap.Any("data", role))
 		ctx.JSON(http.StatusInternalServerError, pkg.ErrorResp(err))
 		return
 	}
