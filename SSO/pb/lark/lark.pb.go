@@ -302,8 +302,8 @@ type Department struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// @gotags: json:"department"
-	Name string `protobuf:"bytes,1,opt,name=Name,proto3" json:"department"`
+	// @gotags: json:"name"
+	Name string `protobuf:"bytes,1,opt,name=Name,proto3" json:"name"`
 	// @gotags: json:"parent_department_id"
 	ParentDepartmentID string `protobuf:"bytes,2,opt,name=ParentDepartmentID,proto3" json:"parent_department_id"`
 	// @gotags: json:"department_id"
