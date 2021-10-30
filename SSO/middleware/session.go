@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/UniqueStudio/UniqueSSO/common"
+	"github.com/UniqueStudio/UniqueSSO/conf"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
@@ -24,7 +25,7 @@ func SessionRedirect() gin.HandlerFunc {
 
 		// not login.
 		case !ok && ctx.Request.URL.Path != "/login":
-			ctx.Redirect(http.StatusFound, "/login")
+			ctx.Redirect(http.StatusFound, conf.SSOConf.Application.LoginRedirectURI)
 			ctx.Abort()
 			return
 
