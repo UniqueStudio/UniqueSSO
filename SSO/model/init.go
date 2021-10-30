@@ -19,9 +19,9 @@ func InitTables() (err error) {
 		return err
 	}
 
-	err = database.DB.AutoMigrate(&UserPermission{})
+	err = database.DB.AutoMigrate(&RolePermission{})
 	if err != nil {
-		zapx.Error("migrate user permission failed", zap.Error(err))
+		zapx.Error("migrate role permission failed", zap.Error(err))
 		return err
 	}
 

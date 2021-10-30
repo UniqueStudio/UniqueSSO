@@ -14,7 +14,7 @@ type BasicUserInfo struct {
 	UpdateAt time.Time      `json:"-"`
 	DeleteAt gorm.DeletedAt `json:"-" gorm:"index"`
 
-	sso.User
+	*sso.User
 }
 
 type UserGroup struct {
@@ -26,10 +26,11 @@ type UserGroup struct {
 	Groups pq.Int64Array `gorm:"type:integer[]"`
 }
 
-type UserPermission struct {
-	gorm.Model
-	UserID string `gorm:"column:uid"`
-	sso.Permission
+type RolePermission struct {
+	gorm.Model `json:"-"`
+
+	Role sso.Role `gorm:"column:role"`
+	*sso.Permission
 }
 
 type LarkExternalInfo struct {
@@ -37,8 +38,8 @@ type LarkExternalInfo struct {
 	UpdateAt time.Time      `json:"-"`
 	DeleteAt gorm.DeletedAt `json:"-" gorm:"index"`
 
-	sso.ExternalInfo
-	lark.LarkUserInfo
+	*sso.ExternalInfo
+	*lark.LarkUserInfo
 }
 
 type UserExternalInfo struct {
@@ -58,8 +59,8 @@ func (UserGroup) TableName() string {
 	return "user_groups"
 }
 
-func (UserPermission) TableName() string {
-	return "user_permissions"
+func (RolePermission) TableName() string {
+	return "role_permissions"
 }
 
 func (LarkExternalInfo) TableName() string {
