@@ -22,7 +22,6 @@ import (
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
@@ -135,39 +134,19 @@ func run() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	s := new(grpc.Server)
-	if conf.SSOConf.Application.Mode == common.DebugMode {
-		creds, err := credentials.NewServerTLSFromFile(
-			conf.SSOConf.Application.RPCCertFile,
-			conf.SSOConf.Application.RPCKeyFile,
-		)
-		if err != nil {
-			zapx.Fatal("new server credentials failed", zap.Error(err))
-		}
-		s = grpc.NewServer(
-			grpc.Creds(creds),
-			grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
-				grpc_recovery.StreamServerInterceptor(),
-				otelgrpc.StreamServerInterceptor(),
-			)),
-			grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
-				grpc_recovery.UnaryServerInterceptor(),
-				otelgrpc.UnaryServerInterceptor(),
-			)),
-		)
-	} else {
-		s = grpc.NewServer(
-			grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
-				grpc_recovery.StreamServerInterceptor(),
-				otelgrpc.StreamServerInterceptor(),
-			)),
-			grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
-				grpc_recovery.UnaryServerInterceptor(),
-				otelgrpc.UnaryServerInterceptor(),
-			)),
-		)
-	}
 
+	// it's not pretty safe that just using http.
+	// TODO: upgrade it to https when call it out of server
+	s := grpc.NewServer(
+		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
+			grpc_recovery.StreamServerInterceptor(),
+			otelgrpc.StreamServerInterceptor(),
+		)),
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+			grpc_recovery.UnaryServerInterceptor(),
+			otelgrpc.UnaryServerInterceptor(),
+		)),
+	)
 	router.InitRPC(s)
 
 	/*
