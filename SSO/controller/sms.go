@@ -3,6 +3,7 @@ package controller
 import (
 	"errors"
 	"net/http"
+
 	"github.com/UniqueStudio/UniqueSSO/common"
 	"github.com/UniqueStudio/UniqueSSO/pkg"
 	"github.com/UniqueStudio/UniqueSSO/util"
@@ -24,14 +25,14 @@ func SendSmsCode(ctx *gin.Context) {
 		span.RecordError(err)
 		span.SetStatus(codes.Error, err.Error())
 
-		ctx.JSON(http.StatusBadRequest, pkg.InvalidRequest(err))
+		ctx.JSON(http.StatusBadRequest, pkg.ErrorResp(err))
 		return
 	}
 	zapx.WithContext(apmCtx).Info("bind body successfully")
 	span.SetAttributes(attribute.Any("body", login))
 
 	if login.Phone == "" {
-		ctx.JSON(http.StatusBadRequest, pkg.InvalidRequest(errors.New("no phone number specified")))
+		ctx.JSON(http.StatusBadRequest, pkg.ErrorResp(errors.New("no phone number specified")))
 		return
 	}
 
@@ -41,8 +42,7 @@ func SendSmsCode(ctx *gin.Context) {
 		span.RecordError(err)
 		span.SetStatus(codes.Error, err.Error())
 
-		ctx.JSON(http.StatusBadRequest, pkg.InvalidRequest(err))
-		ctx.JSON(http.StatusInternalServerError, pkg.InternalError(err))
+		ctx.JSON(http.StatusInternalServerError, pkg.ErrorResp(err))
 		return
 	}
 
@@ -52,16 +52,16 @@ func SendSmsCode(ctx *gin.Context) {
 		span.RecordError(err)
 		span.SetStatus(codes.Error, err.Error())
 
-		ctx.JSON(http.StatusInternalServerError, pkg.InternalError(err))
+		ctx.JSON(http.StatusInternalServerError, pkg.ErrorResp(err))
 		return
 	}
 
 	span.SetAttributes(attribute.Any("sms send status", status))
 
 	if status != nil && len(*status) > 0 {
-		ctx.JSON(http.StatusInternalServerError, pkg.InternalError(errors.New((*status)[0].Message)))
+		ctx.JSON(http.StatusInternalServerError, pkg.ErrorResp(errors.New((*status)[0].Message)))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, pkg.CommonResponse{})
+	ctx.JSON(http.StatusOK, pkg.SuccessResp(""))
 }

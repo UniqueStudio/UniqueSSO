@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"regexp"
 	"time"
 
 	"github.com/UniqueStudio/UniqueSSO/conf"
@@ -83,28 +84,51 @@ func LARK_DELETE_USER(id string) string {
 	return "https://open.feishu.cn/open-apis/contact/v3/users/" + id
 }
 
-var (
-	DEFAULT_PERMISSION = []*sso.Permission{
-		{Action: sso.Action_READ, Resource: sso.Resource_BBS_REPORT, Scope: sso.Scope_ALL},
-	}
-)
+func LARK_DEPARTMENT_INFO(id string) string {
+	return "https://open.feishu.cn/open-apis/contact/v3/departments/" + id
+}
 
 var (
-	USER_TYPE_PERMISSION map[sso.UserType][]*sso.Permission
+	aiRegexp      *regexp.Regexp
+	androidRegexp *regexp.Regexp
+	designRegexp  *regexp.Regexp
+	gameRegexp    *regexp.Regexp
+	labRegexp     *regexp.Regexp
+	pmRegexp      *regexp.Regexp
+	webRegexp     *regexp.Regexp
+	iOSRegexp     *regexp.Regexp
 )
+
+func LARK_GROUP_NAME_2_GROUP(name string) sso.Group {
+	switch {
+	case aiRegexp.MatchString(name):
+		return sso.Group_AI
+	case androidRegexp.MatchString(name):
+		return sso.Group_ANDROID
+	case designRegexp.MatchString(name):
+		return sso.Group_DESIGN
+	case gameRegexp.MatchString(name):
+		return sso.Group_GAME
+	case labRegexp.MatchString(name):
+		return sso.Group_LAB
+	case pmRegexp.MatchString(name):
+		return sso.Group_PM
+	case webRegexp.MatchString(name):
+		return sso.Group_WEB
+	case iOSRegexp.MatchString(name):
+		return sso.Group_IOS
+	default:
+		return sso.Group_invalidGroup
+	}
+}
 
 func init() {
-	USER_TYPE_PERMISSION = make(map[sso.UserType][]*sso.Permission)
-	USER_TYPE_PERMISSION[sso.UserType_Intern] = []*sso.Permission{
-		{Action: sso.Action_READ, Resource: sso.Resource_BBS_REPORT, Scope: sso.Scope_ALL},
-		{Action: sso.Action_WRITE, Resource: sso.Resource_BBS_REPORT, Scope: sso.Scope_SELF},
-	}
-	USER_TYPE_PERMISSION[sso.UserType_Regular] = []*sso.Permission{
-		{Action: sso.Action_READ, Resource: sso.Resource_BBS_REPORT, Scope: sso.Scope_ALL},
-		{Action: sso.Action_WRITE, Resource: sso.Resource_BBS_REPORT, Scope: sso.Scope_SELF},
-	}
-	USER_TYPE_PERMISSION[sso.UserType_Graduated] = []*sso.Permission{
-		{Action: sso.Action_READ, Resource: sso.Resource_BBS_REPORT, Scope: sso.Scope_ALL},
-		{Action: sso.Action_WRITE, Resource: sso.Resource_BBS_REPORT, Scope: sso.Scope_SELF},
-	}
+	aiRegexp, _ = regexp.Compile(`AI.*`)
+	androidRegexp, _ = regexp.Compile(`Android.*`)
+	designRegexp, _ = regexp.Compile(`Design.*`)
+	gameRegexp, _ = regexp.Compile(`Game.*`)
+	labRegexp, _ = regexp.Compile(`Lab.*`)
+	pmRegexp, _ = regexp.Compile(`PM.*`)
+	webRegexp, _ = regexp.Compile(`Web.*`)
+	iOSRegexp, _ = regexp.Compile(`iOS.*`)
 }

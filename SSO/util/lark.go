@@ -275,6 +275,46 @@ func GetLarkContactUserInfo(ctx context.Context, userId string) (*lark.LarkUserI
 	return &data.Data.User, nil
 }
 
+func GetLarkDepartmentInfo(ctx context.Context, dpid string) (*lark.Department, error) {
+	apmCtx, span := Tracer.Start(ctx, "GetLarkDepartmentInfo")
+	defer span.End()
+
+	req, err := http.NewRequestWithContext(
+		apmCtx,
+		http.MethodGet,
+		common.LARK_DEPARTMENT_INFO(dpid),
+		nil,
+	)
+	if err != nil {
+		span.RecordError(err)
+		zapx.WithContext(apmCtx).Error("build fetch lark department info request failed", zap.Error(err))
+		return nil, err
+	}
+
+	tt, err := GetLarkTenantToken(apmCtx)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Authorization", "Bearer "+tt)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		span.RecordError(err)
+		zapx.WithContext(apmCtx).Error("send fetch lark department info failed", zap.Error(err))
+		return nil, err
+	}
+
+	data := new(pkg.LarkGetDepartmentInfoResp)
+	if err := json.NewDecoder(resp.Body).Decode(data); err != nil {
+		span.RecordError(err)
+		zapx.WithContext(apmCtx).Error("unmarshal response failed", zap.Error(err))
+		return nil, err
+	}
+
+	return &data.Data.Department, nil
+}
+
 func RemoveLarkUser(ctx context.Context, eid string) error {
 	apmCtx, span := Tracer.Start(ctx, "RemoveLarkUser")
 	defer span.End()
@@ -334,36 +374,28 @@ func UnmarshalLarkExternalInfo(buf *anypb.Any) (*model.LarkExternalInfo, error) 
 	}
 
 	return &model.LarkExternalInfo{
-		ExternalInfo: sso.ExternalInfo{
-			EName: sso.ExternalType_Lark,
+		ExternalInfo: &sso.ExternalInfo{
+			EName: sso.ExternalType_LARK,
 			EID:   larkExtInfo.UnionID,
 		},
-		LarkUserInfo: *larkExtInfo,
+		LarkUserInfo: larkExtInfo,
 	}, nil
 }
 
-func LarkDepartmentIds2Groups(ids []string) ([]sso.Group, error) {
-	groups := make([]sso.Group, len(ids))
-	for i := range ids {
-		groups[i] = conf.SSOConf.Lark.GroupIdNameMap[ids[i]]
-	}
-	return groups, nil
-}
-
-func LarkEmployeeType2UserType(typ int32) sso.UserType {
-	userType, ok := conf.SSOConf.Lark.LarkEnumTypeMap[typ]
+func LarkEmployeeType2Role(typ int32) sso.Role {
+	role, ok := conf.SSOConf.Lark.LarkEnumTypeMap[typ]
 	if ok {
-		return userType
+		return role
 	}
-	return sso.UserType_Intern
+	return sso.Role_INTERN
 }
 
 func LarkGender2UserGender(gender lark.Gender) sso.Gender {
 	switch gender {
 	case lark.Gender_Male:
-		return sso.Gender_Male
+		return sso.Gender_MALE
 	case lark.Gender_Female:
-		return sso.Gender_Female
+		return sso.Gender_FEMALE
 	default:
 		return sso.Gender_invalidGender
 	}

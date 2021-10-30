@@ -31,8 +31,7 @@ func Login(ctx *gin.Context) {
 	redirectURI := url.PathEscape(ctx.Query("service"))
 	if redirectURI == "" {
 		redirectURI = (&url.URL{
-			Host: ctx.Request.Host,
-			Path: "/",
+			Path:   "/",
 		}).String()
 	}
 	// judge oauth type first
