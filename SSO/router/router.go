@@ -30,6 +30,12 @@ func InitRouter(r *gin.Engine) {
 	router.POST("/login", controller.Login)
 	router.POST("/logout", controller.Logout)
 
+	rolerouter := router.Group("/role")
+	rolerouter.PUT("/user", controller.UpdateUserRoleHandler)
+	rolerouter.GET("/permission", controller.GetRoleAllPermissions)
+	rolerouter.POST("/permission", controller.AddRolePermissionHandler)
+	rolerouter.DELETE("/permission", controller.DeleteRolePermissionHandler)
+
 	// oauth login
 	oauth := v1r.Group("/login/oauth")
 	oauth.GET("/lark", controller.LarkOauthCallbackHandler)
