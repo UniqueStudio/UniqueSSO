@@ -32,7 +32,7 @@ services:
         logging: *loki-logging
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.devsso.rule=Host(`dev.back.sso.hustunique.com`)"
+            - "traefik.http.routers.devsso.rule=Host(`dev-back.sso.hustunique.com`)"
 
 networks:
     uniquesso:
