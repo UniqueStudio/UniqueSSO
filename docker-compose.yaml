@@ -34,6 +34,10 @@ services:
             - "traefik.enable=true"
             - "traefik.http.routers.devsso.rule=Host(`dev-back.sso.hustunique.com`)"
 
+            # forward auth  
+            - "traefik.http.middlewares.dev-sso-auth.forwardauth.address=http://dev-sso-back:5000/v1/gateway/validate/traefik"
+            - "traefik.http.middlewares.dev-sso-auth.forwardauth.authResponseHeaders=X-UID"
+
 networks:
     uniquesso:
         internal: true
