@@ -66,6 +66,8 @@ const (
 	LARK_APP_TOKEN          = "https://open.feishu.cn/open-apis/auth/v3/app_access_token/internal"
 
 	LARK_FETCH_USER_INFO = "https://open.feishu.cn/open-apis/authen/v1/user_info"
+
+	LARK_BOT_PUSH_MESSAGE = "https://open.feishu.cn/open-apis/im/v1/messages"
 )
 
 func LARK_OAUTH_URL(state string) string {

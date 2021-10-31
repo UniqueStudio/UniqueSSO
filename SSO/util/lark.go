@@ -359,6 +359,49 @@ func RemoveLarkUser(ctx context.Context, eid string) error {
 	return nil
 }
 
+func PushMessageByBot(ctx context.Context, data *pkg.LarkBotPushMessage) error {
+	apmCtx, span := Tracer.Start(ctx, "PushMessageByBot")
+	defer span.End()
+
+	bs, err := json.Marshal(data)
+	if err != nil {
+		zapx.WithContext(apmCtx).Error("marshal data failed", zap.Error(err))
+		return err
+	}
+
+	req, err := http.NewRequestWithContext(apmCtx, http.MethodPost, common.LARK_BOT_PUSH_MESSAGE, bytes.NewBuffer(bs))
+	if err != nil {
+		zapx.WithContext(apmCtx).Error("build push message request failed", zap.Error(err))
+		return err
+	}
+	tt, err := GetLarkTenantToken(apmCtx)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Authorization", "Bearer "+tt)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		zapx.WithContext(apmCtx).Error("send request failed", zap.Error(err))
+		return err
+	}
+
+	br := pkg.LarkBasicResp{}
+	if err := json.NewDecoder(resp.Body).Decode(&br); err != nil {
+		zapx.WithContext(apmCtx).Error("can't unmarshal resp", zap.Error(err))
+		return err
+	}
+
+	if br.Code != 0 {
+		err = errors.New(br.Message)
+		zapx.WithContext(apmCtx).Error("push message failed", zap.Error(err))
+		return err
+	}
+
+	return nil
+}
+
 func MarshelLarkExternalInfo(extInfo *lark.LarkUserInfo) (*anypb.Any, error) {
 	data := new(anypb.Any)
 	if err := anypb.MarshalFrom(data, extInfo, proto.MarshalOptions{}); err != nil {

@@ -10,6 +10,7 @@ import (
 	"github.com/UniqueStudio/UniqueSSO/pb/sso"
 	"github.com/UniqueStudio/UniqueSSO/pkg"
 	"github.com/UniqueStudio/UniqueSSO/repo"
+	"github.com/UniqueStudio/UniqueSSO/service"
 	"github.com/UniqueStudio/UniqueSSO/util"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -84,7 +85,14 @@ func LarkOauthCallbackHandler(ctx *gin.Context) {
 				{EName: sso.ExternalType_LARK, EID: larkUserInfo.UnionID, Detail: larkDetail},
 			},
 		}
+
 		err = repo.SaveUser(apmCtx, user)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, pkg.InternalError(err))
+			return
+		}
+
+		err = service.PushTOTPToken2User(apmCtx, larkUserInfo.UnionID, user.TOTPSecret)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, pkg.InternalError(err))
 			return

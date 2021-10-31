@@ -7,9 +7,13 @@ type LarkAppTokenReq struct {
 	AppSecret string `json:"app_secret"`
 }
 
+type LarkBasicResp struct {
+	Code    int    `json:"code"`
+	Message string `json:"msg"`
+}
+
 type LarkAppTokenResp struct {
-	Code           int    `json:"code"`
-	Message        string `json:"msg"`
+	LarkBasicResp
 	AppAccessToken string `json:"app_access_token"`
 	Expire         int    `json:"expire"`
 }
@@ -67,4 +71,10 @@ type LarkGetDepartmentInfoResp struct {
 	Data    struct {
 		Department lark.Department `json:"department"`
 	} `json:"data"`
+}
+
+type LarkBotPushMessage struct {
+	ReceiveID   string `json:"receive_id"`
+	Content     string `json:"content"`
+	MessageType string `json:"msg_type"`
 }
