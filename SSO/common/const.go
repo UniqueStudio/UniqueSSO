@@ -31,7 +31,7 @@ const (
 
 const (
 	SESSION_NAME_UID = "UID"
-	SESSION_MAX_AGE  = 4 * 60 * 60 * 1000
+	SESSION_MAX_AGE  = 4 * 60 * 60 // seconds
 	// CAS_COOKIE_NAME    = "CASTGC"
 	// CAS_TGT_EXPIRES    = time.Hour
 	// CAS_TICKET_EXPIRES = time.Minute * 5

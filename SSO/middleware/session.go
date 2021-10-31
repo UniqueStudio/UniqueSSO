@@ -24,7 +24,7 @@ func SessionRedirect() gin.HandlerFunc {
 			return
 
 		// not login.
-		case !ok && ctx.Request.URL.Path != "/login":
+		case !ok && ctx.Request.URL.Path != "/v1/login":
 			ctx.Redirect(http.StatusFound, conf.SSOConf.Application.LoginRedirectURI)
 			ctx.Abort()
 			return
