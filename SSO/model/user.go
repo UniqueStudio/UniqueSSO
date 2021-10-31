@@ -10,17 +10,17 @@ import (
 )
 
 type BasicUserInfo struct {
-	CreateAt time.Time      `json:"-"`
-	UpdateAt time.Time      `json:"-"`
-	DeleteAt gorm.DeletedAt `json:"-" gorm:"index"`
+	CreatedAt time.Time      `json:"-"`
+	UpdatedAt time.Time      `json:"-"`
+	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 
 	*sso.User
 }
 
 type UserGroup struct {
-	CreateAt time.Time      `json:"-"`
-	UpdateAt time.Time      `json:"-"`
-	DeleteAt gorm.DeletedAt `json:"-" gorm:"index"`
+	CreatedAt time.Time      `json:"-"`
+	UpdatedAt time.Time      `json:"-"`
+	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 
 	UserID string        `gorm:"column:uid;primaryKey"`
 	Groups pq.Int64Array `gorm:"type:integer[]"`
@@ -34,18 +34,18 @@ type RolePermission struct {
 }
 
 type LarkExternalInfo struct {
-	CreateAt time.Time      `json:"-"`
-	UpdateAt time.Time      `json:"-"`
-	DeleteAt gorm.DeletedAt `json:"-" gorm:"index"`
+	CreatedAt time.Time      `json:"-"`
+	UpdatedAt time.Time      `json:"-"`
+	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 
 	*sso.ExternalInfo
 	*lark.LarkUserInfo
 }
 
 type UserExternalInfo struct {
-	CreateAt time.Time      `json:"-"`
-	UpdateAt time.Time      `json:"-"`
-	DeleteAt gorm.DeletedAt `json:"-" gorm:"index"`
+	CreatedAt time.Time      `json:"-"`
+	UpdatedAt time.Time      `json:"-"`
+	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 
 	UserID      string         `gorm:"column:uid;primaryKey"`
 	ExternalIDs pq.StringArray `gorm:"column:eids;type:text[]"`
