@@ -33,7 +33,9 @@ func PushTOTPToken2User(ctx context.Context, uid, token string) error {
 		return err
 	}
 
+	zapx.WithContext(apmCtx).Info("push totp token to user successfully")
+
 	return nil
 }
 
-const TOTPTokenMessageTemplate = `{\"config\": {\"wide_screen_mode\": true},\"i18n_elements\": {\"zh_cn\": [{\"tag\": \"markdown\",\"content\": \"初次登陆，为您初始化TOTP Token：\\n**%s**\\n请注意保存，不要泄漏😃\\n请即使前往[UniqueSSO](%s)初始化您的密码\\n\"}]}}`
+const TOTPTokenMessageTemplate = `{"config": {"wide_screen_mode": true},"i18n_elements": {"zh_cn": [{"tag": "markdown","content": "初次登陆，为您初始化TOTP Token：\n**%s**\n请注意保存，不要泄漏😃\n请前往[UniqueSSO](%s)初始化您的密码\n"},{"tag": "hr"},{"tag": "note","elements": [{"tag": "plain_text","content": "sso-dev"}]}]}}`

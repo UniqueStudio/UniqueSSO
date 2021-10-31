@@ -374,11 +374,16 @@ func PushMessageByBot(ctx context.Context, data *pkg.LarkBotPushMessage) error {
 		zapx.WithContext(apmCtx).Error("build push message request failed", zap.Error(err))
 		return err
 	}
+
+	query := url.Values{
+		"receive_id_type": []string{"union_id"},
+	}
+	req.URL.RawQuery = query.Encode()
+
 	tt, err := GetLarkTenantToken(apmCtx)
 	if err != nil {
 		return err
 	}
-
 	req.Header.Set("Authorization", "Bearer "+tt)
 
 	resp, err := http.DefaultClient.Do(req)

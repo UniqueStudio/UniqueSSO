@@ -92,11 +92,7 @@ func LarkOauthCallbackHandler(ctx *gin.Context) {
 			return
 		}
 
-		err = service.PushTOTPToken2User(apmCtx, larkUserInfo.UnionID, user.TOTPSecret)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, pkg.InternalError(err))
-			return
-		}
+		service.PushTOTPToken2User(apmCtx, larkUserInfo.UnionID, user.TOTPSecret)
 	}
 
 	// TODO: update lark user info async
