@@ -76,7 +76,7 @@ func LarkAuthCode2IDToken(ctx context.Context, authCode string) (string, string,
 	}
 
 	// cache user access token
-	database.RedisClient.Set(apmCtx, common.REDIS_LARK_USER_TOKEN_KEY(data.Data.UnionID), data.Data.AccessToken, -1)
+	database.RedisClient.Set(apmCtx, common.REDIS_LARK_USER_TOKEN_KEY(data.Data.UnionID), data.Data.AccessToken, 7200)
 
 	return data.Data.UnionID, data.Data.AccessToken, nil
 }
