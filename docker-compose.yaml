@@ -32,7 +32,7 @@ services:
         logging: *loki-logging
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.devsso.rule=Host(`dev-back.sso.hustunique.com`)"
+            - "traefik.http.routers.devsso.rule=Host(`dev.back.sso.hustunique.com`)"
 
             # forward auth  
             - "traefik.http.middlewares.dev-sso-auth.forwardauth.address=http://dev-sso-back:5000/v1/gateway/validate/traefik"
