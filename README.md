@@ -1,6 +1,8 @@
 # UniqueSSO
 > Single Sign On for UniqueStudio
 
+This Project has been devided into 2 project - [UniqueSSOBackend](https://github.com/UniqueStudio/UniqueSSOBackend) and [uniquesso-frontend](https://github.com/UniqueStudio/uniquesso-frontend). Therefore, this repo is deprecated now.
+
 ## Diagram 
 
 The UniqueSSO is nearly a standard implementation of CAS.
